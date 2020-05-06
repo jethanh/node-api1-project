@@ -138,17 +138,34 @@ server.delete("/api/users/:id", (req, res) => {
 //   - respond with HTTP status code `200` (OK).
 //   - return the newly updated _user document_.
 
-server.put("/api/users/:id", (req, res) => {
-    const id = req.params.id;
-  
-    let userById = users.find(user => user.id == id);
+server.patch("/api/users/:id", (req, res) => {
+    const id = Number(req.params.id);
+    const userInfo = req.body
 
-    if (x) {
-
-    } else if (y) {
-
+    if (!userInfo.name || !userInfo.bio){
+        res.status(400).json({
+            errorMessage: "Provide a name and bio."
+        });
     } else {
+        const user = users.find(user => user.id === id)
 
+        if (user) {
+            users = users.map(user => {
+                return user.id === id ? {id, ...userInfo} : user;
+            })
+            const updatedUser = users.find(user => {
+                return user.id === id;
+            });
+            updatedUser
+                ? res.status(200).json(updatedUser)
+                : res.status(500).json({
+                    errorMessage: "cannot modify"
+                });
+        } else {
+            res.status(404).json({
+                errorMessage: "cannot find by ID"
+            });
+        }
     }
 });
 
